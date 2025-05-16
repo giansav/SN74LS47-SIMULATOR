@@ -1,4 +1,4 @@
-Questa web app offre una dimostrazione visiva del funzionamento del circuito integrato Texas Instruments SN74LS93.
+Questa web app offre una dimostrazione visiva del funzionamento del circuito integrato Texas Instruments SN74LS47.
 L'utente può inserire un numero da 0 a 9 e l'app mostra: 
   1) una rappresentazione binaria del numero inserito,
   2) il modo in cui a questa rappresentazione binaria di 4 bit il circuito fa corrispondere una sequenza univoca di 7 bit,
