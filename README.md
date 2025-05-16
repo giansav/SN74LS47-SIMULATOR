@@ -2,6 +2,6 @@ Questa web app offre una dimostrazione visiva del funzionamento del circuito int
 L'utente può inserire un numero da 0 a 9 e l'app mostra: 
   1) una rappresentazione binaria del numero inserito,
   2) il modo in cui a questa rappresentazione binaria di 4 bit il circuito fa corrispondere una sequenza univoca di 7 bit,
-  3) il modo in cui questo output di 7 bit si traduce nell'attivazione dei 7 led del display che restituisce il numero inserito.
+  3) il modo in cui questo output di 7 bit si traduce nell'attivazione dei 7 led del display che restituisce visivamente il numero inserito.
 
 Ogni commento o suggerimento è benvenuto.
