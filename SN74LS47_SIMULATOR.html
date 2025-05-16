@@ -1,19 +1,38 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
+
   <meta charset="UTF-8">
   <title>Simulatore del Circuito Integrato Texas Instruments SN74LS47</title>
   <title>Binary Coded Decimal  → Display con 7 Segmenti</title>
+  
   <style>
+  
     body {
       font-family: sans-serif;
-      background: #f5f5f5;
-      padding: 2rem;
+      background: #0a0a0a;
+      padding: 1rem;
       text-align: center;
     }
 
+    h1 {
+        color: #ddd;
+        font-size: 2.2rem;
+    }
+
+    h2 {
+        color: #ddd;
+        font-size: 1.6rem;
+    }
+
+    p {
+        color: #ddd;
+        font-size: 1.2rem;
+    }
+
     input[type="number"] {
-      font-size: 1.5rem;
+      font-size: 2rem;
       width: 60px;
       text-align: center;
     }
@@ -46,13 +65,13 @@
       line-height: 60px;
       border-radius: 50%;
       background: #ddd;
-      color: #333;
+      color: black;
       font-weight: bold;
       font-size: 1.2rem;
     }
 
     .active {
-      background: #4caf50;
+      background: #0dc513;
       color: white;
     }
 
@@ -70,7 +89,7 @@
     }
 
     .wire.active {
-      stroke: red;
+      stroke: yellow;
       opacity: 1;
       stroke-width: 2.5;
     }
@@ -86,12 +105,12 @@
 
     .segment-display {
       position: absolute;
-      background: #ddd;
+      background: #dddddd69;
       transition: background 0.2s;
     }
 
     .segment-display.on {
-      background: red;
+      background: yellow;
     }
 
     .a { top: 0; left: 20px; width: 80px; height: 10px; }
@@ -104,27 +123,31 @@
 
     .label {
       position: absolute;
-      font-size: 0.8rem;
-      color: black;
+      font-size: 1rem;
       font-weight: bold;
     }
 
-    .label.a { top: -12px; left: 50%; transform: translateX(-50%); }
-    .label.b { top: 50px; right: -20px; }
-    .label.c { bottom: 2px; right: -20px; }  /* spostata più in basso */
-    .label.d { bottom: -12px; left: 50%; transform: translateX(-50%); }
-    .label.e { bottom: 2px; left: -20px; }  /* spostata più in basso */
-    .label.f { top: 50px; left: -20px; }
-    .label.g { top: 95px; left: 50%; transform: translateX(-50%); }
+    .label.a { top: -20px; left: 50%; transform: translateX(-50%); color:#ddd;}
+    .label.b { top: 45px; right: -20px; color:#ddd;}
+    .label.c { bottom: -20px; right: -20px; color:#ddd;}  /* spostata più in basso */
+    .label.d { bottom: -20px; left: 50%; transform: translateX(-50%); color:#ddd;}
+    .label.e { bottom: -20px; left: -20px; color:#ddd;}  /* spostata più in basso */
+    .label.f { top: 45px; left: -20px; color:#ddd;}
+    .label.g { top: 70px; left: 50%; transform: translateX(-50%); color:#ddd;}
 
     #binaryOutput {
       margin-top: 1rem;
       font-size: 1.2rem;
-      color: #444;
+      color: #ddd;
     }
+
   </style>
+
 </head>
+
+
 <body>
+
   <h1>Simulatore del Circuito Integrato Texas Instruments SN74LS47</h1>
   <h2>Binary Coded Decimal  → Display con 7 Segmenti</h2>
   <p>Inserisci un numero da 0 a 9:</p>
@@ -250,7 +273,7 @@
 
     function updateDisplay(val) {
       const binary = val.toString(2).padStart(4, '0').split('').reverse();
-      binaryDisplay.textContent = `Binario: ${binary.slice().reverse().join('')}`;
+      binaryDisplay.textContent = `Rappresentazione binaria del numero inserito: ${binary.slice().reverse().join('')}`;
 
       binaryBits.forEach((b, i) => {
         b.classList.remove('active');
@@ -294,4 +317,6 @@
   </script>
 
 </body>
+
+
 </html>
