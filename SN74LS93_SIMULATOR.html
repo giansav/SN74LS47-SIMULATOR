@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Simulatore del Circuito Integrato Texas Instruments SN74LS93</title>
+  <title>Binary Coded Decimal  → Display con 7 Segmenti</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f5f5f5;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    input[type="number"] {
+      font-size: 1.5rem;
+      width: 60px;
+      text-align: center;
+    }
+
+    .container {
+      position: relative;
+      width: 600px;
+      margin: 2rem auto;
+      height: 500px;
+    }
+
+    .binary-bits, .segments {
+      display: flex;
+      justify-content: space-between;
+      position: absolute;
+      width: 100%;
+    }
+
+    .binary-bits {
+      top: 0;
+    }
+
+    .segments {
+      top: 120px;
+    }
+
+    .bit, .seg {
+      width: 60px;
+      height: 60px;
+      line-height: 60px;
+      border-radius: 50%;
+      background: #ddd;
+      color: #333;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    .active {
+      background: #4caf50;
+      color: white;
+    }
+
+    svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+
+    .wire {
+      stroke: gray;
+      stroke-width: 2;
+      opacity: 0.3;
+    }
+
+    .wire.active {
+      stroke: red;
+      opacity: 1;
+      stroke-width: 2.5;
+    }
+
+    .seven-segment-display {
+      position: absolute;
+      top: 270px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 200px;
+    }
+
+    .segment-display {
+      position: absolute;
+      background: #ddd;
+      transition: background 0.2s;
+    }
+
+    .segment-display.on {
+      background: red;
+    }
+
+    .a { top: 0; left: 20px; width: 80px; height: 10px; }
+    .b { top: 10px; right: 0; width: 10px; height: 80px; }
+    .c { bottom: 10px; right: 0; width: 10px; height: 80px; }
+    .d { bottom: 0; left: 20px; width: 80px; height: 10px; }
+    .e { bottom: 10px; left: 0; width: 10px; height: 80px; }
+    .f { top: 10px; left: 0; width: 10px; height: 80px; }
+    .g { top: 95px; left: 20px; width: 80px; height: 10px; }
+
+    .label {
+      position: absolute;
+      font-size: 0.8rem;
+      color: black;
+      font-weight: bold;
+    }
+
+    .label.a { top: -12px; left: 50%; transform: translateX(-50%); }
+    .label.b { top: 50px; right: -20px; }
+    .label.c { bottom: 2px; right: -20px; }  /* spostata più in basso */
+    .label.d { bottom: -12px; left: 50%; transform: translateX(-50%); }
+    .label.e { bottom: 2px; left: -20px; }  /* spostata più in basso */
+    .label.f { top: 50px; left: -20px; }
+    .label.g { top: 95px; left: 50%; transform: translateX(-50%); }
+
+    #binaryOutput {
+      margin-top: 1rem;
+      font-size: 1.2rem;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+  <h1>Simulatore del Circuito Integrato Texas Instruments SN74LS93</h1>
+  <h2>Binary Coded Decimal  → Display con 7 Segmenti</h2>
+  <p>Inserisci un numero da 0 a 9:</p>
+  <input type="number" id="digit" min="0" max="9">
+  <p id="binaryOutput">Rappresentazione binaria del numero inserito: 0000</p>
+
+  <div class="container">
+    <!-- Bits binari -->
+    <div class="binary-bits" id="bitContainer">
+      <div class="bit" id="bit0">0</div>
+      <div class="bit" id="bit1">0</div>
+      <div class="bit" id="bit2">0</div>
+      <div class="bit" id="bit3">0</div>
+    </div>
+
+    <!-- Segmenti (a–g) output astratto -->
+    <div class="segments" id="segContainer">
+      <div class="seg" id="segA">a</div>
+      <div class="seg" id="segB">b</div>
+      <div class="seg" id="segC">c</div>
+      <div class="seg" id="segD">d</div>
+      <div class="seg" id="segE">e</div>
+      <div class="seg" id="segF">f</div>
+      <div class="seg" id="segG">g</div>
+    </div>
+
+    <!-- Display 7 segmenti -->
+    <div class="seven-segment-display" id="sevenDisplay">
+      <div class="segment-display a" id="dispA"></div>
+      <div class="segment-display b" id="dispB"></div>
+      <div class="segment-display c" id="dispC"></div>
+      <div class="segment-display d" id="dispD"></div>
+      <div class="segment-display e" id="dispE"></div>
+      <div class="segment-display f" id="dispF"></div>
+      <div class="segment-display g" id="dispG"></div>
+
+      <!-- Etichette segmenti -->
+      <div class="label a">a</div>
+      <div class="label b">b</div>
+      <div class="label c">c</div>
+      <div class="label d">d</div>
+      <div class="label e">e</div>
+      <div class="label f">f</div>
+      <div class="label g">g</div>
+    </div>
+
+    <!-- Linee SVG -->
+    <svg width="600" height="500" id="svgLines"></svg>
+  </div>
+
+  <script>
+    const input = document.getElementById('digit');
+    const binaryDisplay = document.getElementById('binaryOutput');
+
+    const binaryBits = [
+      document.getElementById('bit0'),
+      document.getElementById('bit1'),
+      document.getElementById('bit2'),
+      document.getElementById('bit3')
+    ];
+
+    const segments = {
+      a: document.getElementById('segA'),
+      b: document.getElementById('segB'),
+      c: document.getElementById('segC'),
+      d: document.getElementById('segD'),
+      e: document.getElementById('segE'),
+      f: document.getElementById('segF'),
+      g: document.getElementById('segG')
+    };
+
+    const segmentDisplay = {
+      a: document.getElementById('dispA'),
+      b: document.getElementById('dispB'),
+      c: document.getElementById('dispC'),
+      d: document.getElementById('dispD'),
+      e: document.getElementById('dispE'),
+      f: document.getElementById('dispF'),
+      g: document.getElementById('dispG')
+    };
+
+    const segmentMap = {
+      0: ['a','b','c','d','e','f'],
+      1: ['b','c'],
+      2: ['a','b','g','e','d'],
+      3: ['a','b','c','d','g'],
+      4: ['f','g','b','c'],
+      5: ['a','f','g','c','d'],
+      6: ['a','f','e','d','c','g'],
+      7: ['a','b','c'],
+      8: ['a','b','c','d','e','f','g'],
+      9: ['a','b','c','d','f','g']
+    };
+
+    const svg = document.getElementById('svgLines');
+    let lines = [];
+
+    function drawWires() {
+      svg.innerHTML = '';
+      lines = [];
+
+      for (let i = 0; i < 4; i++) {
+        const bitEl = binaryBits[i];
+        const bitRect = bitEl.getBoundingClientRect();
+
+        for (const [segName, segEl] of Object.entries(segments)) {
+          const segRect = segEl.getBoundingClientRect();
+
+          const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          line.setAttribute("x1", bitRect.left + bitRect.width / 2 - svg.getBoundingClientRect().left);
+          line.setAttribute("y1", bitRect.top + bitRect.height / 2 - svg.getBoundingClientRect().top);
+          line.setAttribute("x2", segRect.left + segRect.width / 2 - svg.getBoundingClientRect().left);
+          line.setAttribute("y2", segRect.top + segRect.height / 2 - svg.getBoundingClientRect().top);
+          line.classList.add('wire');
+          line.dataset.bit = i;
+          line.dataset.segment = segName;
+
+          svg.appendChild(line);
+          lines.push(line);
+        }
+      }
+    }
+
+    function updateDisplay(val) {
+      const binary = val.toString(2).padStart(4, '0').split('').reverse();
+      binaryDisplay.textContent = `Binario: ${binary.slice().reverse().join('')}`;
+
+      binaryBits.forEach((b, i) => {
+        b.classList.remove('active');
+        b.textContent = '0';
+      });
+
+      Object.values(segments).forEach(s => s.classList.remove('active'));
+      Object.values(segmentDisplay).forEach(s => s.classList.remove('on'));
+      lines.forEach(l => l.classList.remove('active'));
+
+      binary.forEach((bit, i) => {
+        binaryBits[i].textContent = bit;
+        if (bit === '1') binaryBits[i].classList.add('active');
+      });
+
+      const activeSegs = segmentMap[val];
+      activeSegs.forEach(s => {
+        segments[s].classList.add('active');
+        segmentDisplay[s].classList.add('on');
+      });
+
+      lines.forEach(line => {
+        const bitIndex = parseInt(line.dataset.bit);
+        const segName = line.dataset.segment;
+
+        if (binary[bitIndex] === '1' && activeSegs.includes(segName)) {
+          line.classList.add('active');
+        }
+      });
+    }
+
+    input.addEventListener('input', () => {
+      const val = parseInt(input.value);
+      if (!isNaN(val) && val >= 0 && val <= 9) {
+        updateDisplay(val);
+      }
+    });
+
+    window.addEventListener('load', drawWires);
+    window.addEventListener('resize', drawWires);
+  </script>
+
+</body>
+</html>
